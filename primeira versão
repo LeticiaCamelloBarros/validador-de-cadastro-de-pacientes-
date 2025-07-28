@@ -1,0 +1,153 @@
+"""
+Faça um programa em python que cadastra N usuários no sistema de um hospital.
+O usuário deverá inifmar a quantidade de pacientes a serem cadastrados,
+informando nome completo, idade, data de nascimento, comorbidades, altura e peso.
+O sistema deverá controlar as respostas, não permitindo que o cadastro seja finalizado
+caso o usuário digite valores indevidos.
+Se o valor estiver indevido, deverá solicitar novamente para correção.
+"""
+numeros = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"}
+# numeros é um set , se diferencia dos dicionários porque os dicionários tem dois pontos (fora dos aspas) ligando um key
+# à um value e uma virgula separando keys e values de outras keys e values.Já dict_vazio é um dicionário , se diferenciando de um set
+# porque sets , mesmo tendo a estrutura de criação parecida com dicionários , são  de items não ordenados que não permitem itens duplicados
+# se diferenciando de lista por esse motivo
+dict_vazio = {}
+# esse while TRue é para o usuário digitar a quantidade de pacientes até ela dar não alfabética
+while True:
+    try:
+        quant_pacientes = int(
+            input("quantos pacientes você deseja cadastrar ?  :  "))
+        break
+    except ValueError:
+        print("por favor digite a quantidade de paciente como um digito")
+# só irá haver a verificação dessa condicional se sair do loop , ou seja ,quando a condição do break
+#  for obedecida ,ou seja ,quando for possivel a conversão da string para inteiro
+if quant_pacientes == 0:
+    print("okay sem pacientes por hoje")
+
+
+def validar_idade(idade):
+    # Verifica TODOS os caracteres da string são algorismos sem try except
+    if all(caractere in numeros for caractere in idade) and int(idade) > 0:
+        return f"idade  válida" + f" :  {idade} : os numeros são positivos , maiores que 0 e digitos "
+    elif all(caractere in numeros for caractere in idade) and int(idade) < 0:
+        return f"idade  inválida" + f" : {idade} mesmo os números sendo digitos eles são menores que 0"
+    elif all(caractere in numeros for caractere in idade) and int(idade) == 0:
+        return f"idade  inválida" + f": {idade} mesmo os números sendo digitos o , a idade é 0 "
+    else:
+        return f"idade  inválida" + f" : {idade} você errou tudo : \n *a idade deve ser maior que 0 \n *a idade deve ser escrita com algorismos "
+
+
+def validar_nome(nome):
+    # condicional para verificar se o usuário deixou esssa pergunta em branco , vamos colocar essa condicional antes das outras por que não faz
+    # sentido verificar as outras se o usuário não obedecer à isso
+    if not nome.strip():
+        # O uso do .strip() em if not nome.strip() é uma prática importante para validação de nomes (ou qualquer input de texto). Vou explicar detalhadamente:
+        # Por que usar .strip()?Remove espaços em branco invisíveis: Um usuário pode digitar apenas espaços (" ") ou dar um espaço antes/após o nome (" Maria ")
+        # Sem .strip(), o Python não consideraria isso como "vazio" (já que tecnicamente há caracteres).
+        return "resposta1"
+    # condicional para que todos os caracteres não serem algarismos
+    elif all(caractere in numeros for caractere in nome):
+        return "resposta6"
+    elif all(caractere not in numeros for caractere in nome):
+        if len(nome) <= 1:
+            return "resposta2"
+        else:
+            return "resposta3"
+    # para algum caractere  numérico
+    else:
+        if len(nome) <= 1:
+            return "resposta4"
+        else:
+            return "resposta5"
+
+
+def validar_dia(dia):
+    if 1 <= dia <= 31:
+        valida_dia = True
+    else:
+        valida_dia = False
+    return valida_dia
+
+
+def validar_mes(mes):
+    if 1 <= mes <= 12:
+        valida_mes = True
+    else:
+        valida_mes = False
+    return valida_mes
+
+
+def validar_ano(ano, idade):
+    ano_atual = 2025
+    # vamos colocar a data de referencia para saber se a pessoa está mentido a idade como 2025 que o ano atual
+    if ano_atual - ano == idade or ano_atual - ano == idade - 1:
+        # vamos dar a brecha de imcompatibilidade de um ano ,
+        # porque as vezes a pessoa nasce no fim do ano e passa o ano quase inteiro com a idade atrasada
+        valida_ano = True
+    else:
+        valida_ano = False
+    return valida_ano
+
+
+idades_emvalicao = 1
+nomes_emvalicao = 1
+datas_emvalidacao = 1
+# numeros = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"}
+for i in range(0, quant_pacientes):
+    # para cada paciente vai ser aberto um loop while True
+    while True:
+        # parte responsável por verificar idade #
+        print("+="*15 + f"paciente número {idades_emvalicao}" + "+="*15)
+        idade = input("quantos anos você tem ? ")
+        if "idade válida" in validar_idade(idade):
+            print(validar_idade(idade))
+            idades_emvalicao = idades_emvalicao + 1
+            # adiciona 1 a contagem dos números de idades de pacientes válidos
+            break
+        elif "idade válida" not in validar_idade(idade):
+            print(validar_idade(idade))
+
+    while True:
+        print("+="*15 + f"paciente número {nomes_emvalicao}" + "+="*15)
+        nome = input("qual seu nome ? : ")
+        if validar_nome(nome) == "resposta3":
+            print("nome válido : o nome ", nome,
+                  "tem mais de uma letra e não tem algarismos ")
+            nomes_emvalicao = nomes_emvalicao + 1
+            # adiciona 1 a contagem do número de nomes  de pacientes válidos
+            break
+        elif validar_nome(nome) == "resposta6":
+            print("nome", nome, " inválido : todos os caracteres são números ")
+        elif validar_nome(nome) == "resposta2":
+            print("nome ", nome, " inválido : mesmo o nome sendo composto por letras ,o nome deve conter mais de um caractere ")
+        elif validar_nome(nome) == "resposta3":
+            print("nome ", nome, "válido : tem mais de uma letra e não tem algarismos ")
+            break
+        elif validar_nome(nome) == "resposta4":
+            print(
+                "nome", nome, " inválido : Além de o nome só ter um caractere esse nome tem um algarismo")
+        elif validar_nome(nome) == "resposta5":
+            print("nome", nome, " inválido : mesmo o nome tendo o comprimento maior que um , um dos caracteres dele é um algarismo")
+
+    while True:
+        print("+="*15 + f"paciente número {datas_emvalidacao}" + "+="*15)
+        dia, mes, ano = input(
+            "insira sua data de nascimento , separando o dia o mês e o ano por espaço").split(" ")
+        dia = int(dia)
+        mes = int(mes)
+        ano = int(ano)
+        idade = int(idade)
+        if validar_dia(dia) == True and validar_mes(mes) == True and validar_ano(ano, idade) == True:
+            data_de_nasc = f"{dia}/{mes}/{ano}"
+            print("data de nascimento válida.")
+            break
+        elif validar_dia(dia) == True and validar_mes(mes) == True and validar_ano(ano, idade) == False:
+            print(
+                "ano de nascimento inválido , tente inserir um ano compátivél com a sua idade. ")
+        elif validar_dia(dia) == True and validar_mes(mes) == False and validar_ano(ano, idade) == True:
+            print(
+                "tente colocar um mês possível , sabendo que eles variam de 1 a 12 , janeiro a dezembro respectivamente")
+        elif validar_dia(dia) == False and validar_mes(mes) == True and validar_ano(ano, idade) == True:
+            print(
+                "tente inserir um dia valido , sabendo que os dias do mês vão de 1 a 31 ")
