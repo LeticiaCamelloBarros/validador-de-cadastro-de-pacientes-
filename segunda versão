@@ -27,18 +27,39 @@ if quant_pacientes == 0:
 
 
 def validar_idade(idade):
+    # Lógica da ordem das nossas condicionais interdependentes : a condicional que causa o break deve ir por último
     # Verifica TODOS os caracteres da string são algorismos sem try except
-    if all(caractere in numeros for caractere in idade) and int(idade) > 0:
-        return f"idade  válida" + f" :  {idade} : os numeros são positivos , maiores que 0 e digitos "
-    elif all(caractere in numeros for caractere in idade) and int(idade) < 0:
-        return f"idade  inválida" + f" : {idade} mesmo os números sendo digitos eles são menores que 0"
-    elif all(caractere in numeros for caractere in idade) and int(idade) == 0:
-        return f"idade  inválida" + f": {idade} mesmo os números sendo digitos o , a idade é 0 "
-    else:
-        return f"idade  inválida" + f" : {idade} você errou tudo : \n *a idade deve ser maior que 0 \n *a idade deve ser escrita com algorismos "
+    if not idade.strip():
+        return "resposta1"
+    # resposta 1 : você não pode deixar essa categoria em branco
+    elif all(caractere not in numeros for caractere in idade):
+        # caso todas as variaveis cacteres não pertenção ao conjunto numeros , sendo essas variáveis partes da variável idade .
+        return "resposta2"
+    # resposta 2 : você não pode registrar sua idade na forma de nome , registre na forma de número , usando os digitos 0,1,2,3,4,5,6,7,8,9
+    elif any(caractere not in numeros for caractere in idade):
+        # caso pelo menos uma das  variaveis cacteres não pertença ao conjunto numeros , sendo essa variável parte da variável idade .
+        return "resposta3"
+    # resposta 3 : você não pode mesclar números com letras ao registrar sua idade , isso nem faz sentido !!
+    elif all(caractere in numeros for caractere in idade):
+        #  caso todas as variaveis cacteres  pertenção ao conjunto numeros , sendo essas variáveis partes da variável idade .
+        # nesse caso teremos variáveis que são números inteiros ( números negativos constam como inteiros )
+        if idade.startswith("-") == True:
+            # se a idade começar com  "-" significa que um número negativo , não queremos pessoas com idade negativa no nosso hospital
+            return "resposta4"
+        # não registraremos no nosso hospital pessoas que ainda não nasceram . Assim que a criança nascer você poderá fazer o registro
+        elif idade.startswith("-") == False and "-" in idade:
+            # Vamos nos previnir para caso a pessoa queira por um traço no meio da idade tipo : 1-2 e 12- : e imprimir uma mensagem especifica para isso
+            return "resposta5"
+        # resposta 5 : idade inválida porque você não pode simplesmente colocar um caractere especial no meio da idade isso nem faz sentido
+        elif "-" not in idade:
+            # temos que fazer essa vericação do traço não estar em idade porque o traço está na nossa lista de números , e se deixassemos isso passar
+            # teriamos idades como essa daqui : 1-2 ou 12- : que não fazem o menor sentido
+            return "resposta6"
+        # resposta 6 : resposta válida : resposta formada apenas por algarismos .
 
 
 def validar_nome(nome):
+    # Lógica da ordem das nossas condicionais interdependentes : a condicional que causa o break deve ir por último
     # condicional para verificar se o usuário deixou esssa pergunta em branco , vamos colocar essa condicional antes das outras por que não faz
     # sentido verificar as outras se o usuário não obedecer à isso
     if not nome.strip():
@@ -64,6 +85,7 @@ def validar_nome(nome):
 
 def validar_dia(dia):
     if 1 <= dia <= 31:
+        # um dia válido vai do dia 1 ao dia 31 na maioria dos meses ( vamos considerar todos como 31 )
         valida_dia = True
     else:
         valida_dia = False
@@ -100,14 +122,19 @@ for i in range(0, quant_pacientes):
         # parte responsável por verificar idade #
         print("+="*15 + f"paciente número {idades_emvalicao}" + "+="*15)
         idade = input("quantos anos você tem ? ")
-        if "idade válida" in validar_idade(idade):
-            print(validar_idade(idade))
-            idades_emvalicao = idades_emvalicao + 1
-            # adiciona 1 a contagem dos números de idades de pacientes válidos
+        if validar_idade(idade) == "resposta1":
+            print("idade inválida : você não pode deixar essa categoria em branco")
+        elif validar_idade(idade) == "resposta2":
+            print("idade inválida : você não pode registrar sua idade na forma de nome , registre na forma de número , usando os digitos 0,1,2,3,4,5,6,7,8,9")
+        elif validar_idade(idade) == "resposta3":
+            print("você não pode mesclar números(ou caractere "-") com letras ao registrar sua idade , isso nem faz sentido !!")
+        elif validar_idade(idade) == "resposta4":
+            print("idade inválida : não registraremos no nosso hospital pessoas que ainda não nasceram . Assim que a criança nascer você poderá fazer o registro")
+        elif validar_idade(idade) == "resposta5":
+            print("idade inválida : você não pode simplesmente colocar um caractere especial no meio da idade isso nem faz sentido")
+        elif validar_idade(idade) == "resposta6":
+            print("idade válida : resposta formada apenas por algarismos .")
             break
-        elif "idade válida" not in validar_idade(idade):
-            print(validar_idade(idade))
-
     while True:
         print("+="*15 + f"paciente número {nomes_emvalicao}" + "+="*15)
         nome = input("qual seu nome ? : ")
@@ -132,8 +159,9 @@ for i in range(0, quant_pacientes):
 
     while True:
         print("+="*15 + f"paciente número {datas_emvalidacao}" + "+="*15)
-        dia, mes, ano = input(
-            "insira sua data de nascimento , separando o dia o mês e o ano por espaço").split(" ")
+        # vou usar o split para desempacotar as variáveis e o strip vou usar para tirar os espaços em branco
+        dia, mes, ano = (input(
+            "insira sua data de nascimento , separando o dia o mês e o ano por espaço : \n ").strip()).split(" ")
         dia = int(dia)
         mes = int(mes)
         ano = int(ano)
