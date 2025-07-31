@@ -6,6 +6,10 @@ O sistema deverá controlar as respostas, não permitindo que o cadastro seja fi
 caso o usuário digite valores indevidos.
 Se o valor estiver indevido, deverá solicitar novamente para correção.
 """
+
+pacientes = []
+# essa será a lista contendo os dados de todos os pacientes
+
 numeros = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"}
 # numeros é um set , se diferencia dos dicionários porque os dicionários tem dois pontos (fora dos aspas) ligando um key
 # à um value e uma virgula separando keys e values de outras keys e values.Já dict_vazio é um dicionário , se diferenciando de um set
@@ -16,7 +20,8 @@ dict_vazio = {}
 while True:
     try:
         quant_pacientes = int(
-            input("quantos pacientes você deseja cadastrar ?  :  "))
+            input(" \npara sair do programa sem registrar pacientes digite '0'\n"
+                  "quantos pacientes você deseja cadastrar ?  :  "))
         break
     except ValueError:
         print("por favor digite a quantidade de paciente como um digito")
@@ -27,24 +32,45 @@ if quant_pacientes == 0:
 
 
 def validar_idade(idade):
+    # Lógica da ordem das nossas condicionais interdependentes : a condicional que causa o break deve ir por último
     # Verifica TODOS os caracteres da string são algorismos sem try except
-    if all(caractere in numeros for caractere in idade) and int(idade) > 0:
-        return f"idade  válida" + f" :  {idade} : os numeros são positivos , maiores que 0 e digitos "
-    elif all(caractere in numeros for caractere in idade) and int(idade) < 0:
-        return f"idade  inválida" + f" : {idade} mesmo os números sendo digitos eles são menores que 0"
-    elif all(caractere in numeros for caractere in idade) and int(idade) == 0:
-        return f"idade  inválida" + f": {idade} mesmo os números sendo digitos o , a idade é 0 "
-    else:
-        return f"idade  inválida" + f" : {idade} você errou tudo : \n *a idade deve ser maior que 0 \n *a idade deve ser escrita com algorismos "
+    if not idade.lower():
+        return "resposta1"
+    # resposta 1 : você não pode deixar essa categoria em branco
+    elif all(caractere not in numeros for caractere in idade):
+        # caso todas as variaveis cacteres não pertenção ao conjunto numeros , sendo essas variáveis partes da variável idade .
+        return "resposta2"
+    # resposta 2 : você não pode registrar sua idade na forma de nome , registre na forma de número , usando os digitos 0,1,2,3,4,5,6,7,8,9
+    elif any(caractere not in numeros for caractere in idade):
+        # caso pelo menos uma das  variaveis cacteres não pertença ao conjunto numeros , sendo essa variável parte da variável idade .
+        return "resposta3"
+    # resposta 3 : você não pode mesclar números com letras ao registrar sua idade , isso nem faz sentido !!
+    elif all(caractere in numeros for caractere in idade):
+        #  caso todas as variaveis cacteres  pertenção ao conjunto numeros , sendo essas variáveis partes da variável idade .
+        # nesse caso teremos variáveis que são números inteiros ( números negativos constam como inteiros )
+        if idade.startswith("-") == True:
+            # se a idade começar com  "-" significa que um número negativo , não queremos pessoas com idade negativa no nosso hospital
+            return "resposta4"
+        # não registraremos no nosso hospital pessoas que ainda não nasceram . Assim que a criança nascer você poderá fazer o registro
+        elif idade.startswith("-") == False and "-" in idade:
+            # Vamos nos previnir para caso a pessoa queira por um traço no meio da idade tipo : 1-2 e 12- : e imprimir uma mensagem especifica para isso
+            return "resposta5"
+        # resposta 5 : idade inválida porque você não pode simplesmente colocar um caractere especial no meio da idade isso nem faz sentido
+        elif "-" not in idade:
+            # temos que fazer essa vericação do traço não estar em idade porque o traço está na nossa lista de números , e se deixassemos isso passar
+            # teriamos idades como essa daqui : 1-2 ou 12- : que não fazem o menor sentido
+            return "resposta6"
+        # resposta 6 : resposta válida : resposta formada apenas por algarismos .
 
 
 def validar_nome(nome):
+    # Lógica da ordem das nossas condicionais interdependentes : a condicional que causa o break deve ir por último
     # condicional para verificar se o usuário deixou esssa pergunta em branco , vamos colocar essa condicional antes das outras por que não faz
     # sentido verificar as outras se o usuário não obedecer à isso
-    if not nome.strip():
-        # O uso do .strip() em if not nome.strip() é uma prática importante para validação de nomes (ou qualquer input de texto). Vou explicar detalhadamente:
-        # Por que usar .strip()?Remove espaços em branco invisíveis: Um usuário pode digitar apenas espaços (" ") ou dar um espaço antes/após o nome (" Maria ")
-        # Sem .strip(), o Python não consideraria isso como "vazio" (já que tecnicamente há caracteres).
+    if not nome.lower():
+        # O uso do .lower() em if not nome.lower() é uma prática importante para validação de nomes (ou qualquer input de texto). Vou explicar detalhadamente:
+        # Por que usar .lower()?Remove espaços em branco invisíveis: Um usuário pode digitar apenas espaços (" ") ou dar um espaço antes/após o nome (" Maria ")
+        # Sem .lower(), o Python não consideraria isso como "vazio" (já que tecnicamente há caracteres).
         return "resposta1"
     # condicional para que todos os caracteres não serem algarismos
     elif all(caractere in numeros for caractere in nome):
@@ -64,6 +90,7 @@ def validar_nome(nome):
 
 def validar_dia(dia):
     if 1 <= dia <= 31:
+        # um dia válido vai do dia 1 ao dia 31 na maioria dos meses ( vamos considerar todos como 31 )
         valida_dia = True
     else:
         valida_dia = False
@@ -90,40 +117,44 @@ def validar_ano(ano, idade):
     return valida_ano
 
 
-idades_emvalicao = 1
-nomes_emvalicao = 1
+idades_emvalidacao = 1
+nomes_emvalidacao = 1
 datas_emvalidacao = 1
 # numeros = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"}
 for i in range(0, quant_pacientes):
     # para cada paciente vai ser aberto um loop while True
     while True:
         # parte responsável por verificar idade #
-        print("+="*15 + f"paciente número {idades_emvalicao}" + "+="*15)
-        idade = input("quantos anos você tem ? ")
-        if "idade válida" in validar_idade(idade):
-            print(validar_idade(idade))
-            idades_emvalicao = idades_emvalicao + 1
-            # adiciona 1 a contagem dos números de idades de pacientes válidos
+        print("+="*15 + f"paciente número {idades_emvalidacao}" + "+="*15)
+        idade = (input("quantos anos você tem ? ")).strip()
+        if validar_idade(idade) == "resposta1":
+            print("idade inválida : você não pode deixar essa categoria em branco")
+        elif validar_idade(idade) == "resposta2":
+            print("idade inválida : você não pode registrar sua idade na forma de nome , registre na forma de número , usando os digitos 0,1,2,3,4,5,6,7,8,9")
+        elif validar_idade(idade) == "resposta3":
+            print("você não pode mesclar números(ou caractere " -
+                  ") com letras ao registrar sua idade , isso nem faz sentido !!")
+        elif validar_idade(idade) == "resposta4":
+            print("idade inválida : não registraremos no nosso hospital pessoas que ainda não nasceram . Assim que a criança nascer você poderá fazer o registro")
+        elif validar_idade(idade) == "resposta5":
+            print("idade inválida : você não pode simplesmente colocar um caractere especial no meio da idade isso nem faz sentido")
+        elif validar_idade(idade) == "resposta6":
+            print("idade válida : resposta formada apenas por algarismos .")
+            idades_emvalidacao = idades_emvalidacao + 1
             break
-        elif "idade válida" not in validar_idade(idade):
-            print(validar_idade(idade))
-
     while True:
-        print("+="*15 + f"paciente número {nomes_emvalicao}" + "+="*15)
-        nome = input("qual seu nome ? : ")
+        print("+="*15 + f"paciente número {nomes_emvalidacao}" + "+="*15)
+        nome = (input("qual seu nome ? : ").strip()).lower()
         if validar_nome(nome) == "resposta3":
             print("nome válido : o nome ", nome,
                   "tem mais de uma letra e não tem algarismos ")
-            nomes_emvalicao = nomes_emvalicao + 1
+            nomes_emvalidacao = nomes_emvalidacao + 1
             # adiciona 1 a contagem do número de nomes  de pacientes válidos
             break
         elif validar_nome(nome) == "resposta6":
             print("nome", nome, " inválido : todos os caracteres são números ")
         elif validar_nome(nome) == "resposta2":
             print("nome ", nome, " inválido : mesmo o nome sendo composto por letras ,o nome deve conter mais de um caractere ")
-        elif validar_nome(nome) == "resposta3":
-            print("nome ", nome, "válido : tem mais de uma letra e não tem algarismos ")
-            break
         elif validar_nome(nome) == "resposta4":
             print(
                 "nome", nome, " inválido : Além de o nome só ter um caractere esse nome tem um algarismo")
@@ -132,15 +163,20 @@ for i in range(0, quant_pacientes):
 
     while True:
         print("+="*15 + f"paciente número {datas_emvalidacao}" + "+="*15)
-        dia, mes, ano = input(
-            "insira sua data de nascimento , separando o dia o mês e o ano por espaço").split(" ")
-        dia = int(dia)
-        mes = int(mes)
-        ano = int(ano)
-        idade = int(idade)
+        # vou usar o split para desempacotar as variáveis e o strip vou usar para tirar os espaços em branco
+        try:
+            dia, mes, ano = (input(
+                "insira sua data de nascimento , separando o dia o mês e o ano por espaço : \n ").lower()).split(" ")
+            dia = int(dia)
+            mes = int(mes)
+            ano = int(ano)
+            idade = int(idade)
+        except ValueError:
+            print("digite 3 informações separadas por espaços : dia , mes e ano ")
         if validar_dia(dia) == True and validar_mes(mes) == True and validar_ano(ano, idade) == True:
             data_de_nasc = f"{dia}/{mes}/{ano}"
             print("data de nascimento válida.")
+            datas_emvalidacao = datas_emvalidacao + 1
             break
         elif validar_dia(dia) == True and validar_mes(mes) == True and validar_ano(ano, idade) == False:
             print(
@@ -151,3 +187,49 @@ for i in range(0, quant_pacientes):
         elif validar_dia(dia) == False and validar_mes(mes) == True and validar_ano(ano, idade) == True:
             print(
                 "tente inserir um dia valido , sabendo que os dias do mês vão de 1 a 31 ")
+
+    dict_data = {"data de nascimento": data_de_nasc}
+    dict_idade = {"idade": idade}
+    lista_dados = [dict_idade, dict_data]
+    dict_nome = {nome: lista_dados}
+    pacientes.append(dict_nome)
+
+# "acesso de informações :"
+# ==========================================================================================
+# pacientes = []
+# essa será a lista contendo os dados de todos os pacientes
+# ==========================================================================================
+def visualizacao_de_dados(pacientes):
+    nome = input(
+        ("qual o paciente você quer acessar os dados").lower()).strip()
+
+    for dicionario in pacientes:
+        for chave in dicionario:
+            if chave == nome:
+                status = "find"
+                return dicionario
+            else:
+                status = "not_find"
+                pass
+    if status == "not_find":
+        return "nome não encontrado"
+
+
+if quant_pacientes == 0:
+    continuation = False
+else:
+    continuation = True
+    print("registro feito !!")
+# só faz sentido acessar as informações dos pacientes se ele quiser registrar algum pacientes
+while continuation == True:
+    quest = (input(
+        "você deseja acessar os dados de algum paciente ? (se sim digite s , se não digite n para sair) : ").lower()).lower()
+    if quest == "n":
+        print("fim do programa")
+        break
+    elif quest == "s":
+        print(visualizacao_de_dados(pacientes))
+        print("fim do programa")
+        break
+    else:
+        print("sua resposta só pode ser s ou n ")
