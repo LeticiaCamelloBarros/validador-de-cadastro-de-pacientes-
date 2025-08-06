@@ -19,16 +19,18 @@ dict_vazio = {}
 # esse while TRue é para o usuário digitar a quantidade de pacientes até ela dar não alfabética
 while True:
     try:
-        quant_pacientes = int(
-            input(" \npara sair do programa sem registrar pacientes digite '0'\n"
-                  "quantos pacientes você deseja cadastrar ?  :  "))
-        break
+        quant_pacientes_input = input("Quantos pacientes você deseja cadastrar? : ")
+        quant_pacientes = int(quant_pacientes_input)
+        if quant_pacientes < 0:
+            print("A quantidade de pacientes não pode ser um número negativo. Por favor, digite um número válido.")
+            continue # Continua o loop para pedir novamente
+        break # Sai do loop se a entrada for válida e não negativa
     except ValueError:
-        print("por favor digite a quantidade de paciente como um digito")
-# só irá haver a verificação dessa condicional se sair do loop , ou seja ,quando a condição do break
-#  for obedecida ,ou seja ,quando for possivel a conversão da string para inteiro
+        print("Por favor, digite a quantidade de pacientes como um número inteiro.")
+
 if quant_pacientes == 0:
-    print("okay sem pacientes por hoje")
+    print("Okay, sem pacientes por hoje.")
+    exit() # Melhoria: Encerra o programa de forma explícita
 
 
 def validar_idade(idade):
